@@ -1,5 +1,6 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <SDL2/SDL.h>
 
 typedef struct {
 	int active, x, y, x2, y2;
@@ -15,8 +16,8 @@ typedef struct {
 typedef TGameMenu *PGameMenu;
 
 TGameMenu *gamemenu;
-PGameMenu hoveredmenu, escmenu, teammenu, limbomenu, kickmenu, mapmenu, gamemenu_arr[5 + 1];
-PGameButton hoveredbutton, button_arr[5 + 1];
+PGameMenu hoveredmenu, escmenu, teammenu, limbomenu, kickmenu, mapmenu, *gamemenu_arr;
+PGameButton hoveredbutton, *button_arr;
 int hoveredbuttonindex, kickmenuindex = 0, mapmenuindex = 0, limbowasactive;
 
 void init_button(PGameMenu menu, int button, char *caption, int x, int y, int w, int h)
@@ -34,17 +35,18 @@ void init_game_menus(void)
 	int i;
 	char *s;
 
-	hoveredmenu = NULL;
-	hoveredbutton = NULL;
+	hoveredmenu = (PGameMenu) (hoveredbutton = (PGameButton) NULL);
 	hoveredbuttonindex = 0;
 
-	gamemenu = (TGameMenu *) malloc(sizeof(TGameMenu) * 5);
+	gamemenu = (TGameMenu *) malloc(sizeof(TGameMenu) * 5 + 1);
+	gamemenu_arr = (PGameMenu *) malloc(sizeof(PGameMenu) * 5 + 1);
+	button_arr = (PGameButton *) malloc(sizeof(PGameButton) * 5 + 1);
 	gamemenu_arr[0] = escmenu = &gamemenu[0];
 	gamemenu_arr[1] = teammenu = &gamemenu[1];
 	gamemenu_arr[2] = limbomenu = &gamemenu[2];
 	gamemenu_arr[3] = kickmenu = &gamemenu[3];
 	gamemenu_arr[4] = mapmenu = &gamemenu[4];
-	gamemenu_arr[5] = (PGameMenu) NULL;
+	button_arr[5] = (PGameButton) (gamemenu_arr[5] = (PGameMenu) NULL);
 
 	escmenu->w = 300;
 	escmenu->h = 200;
@@ -124,8 +126,6 @@ void init_game_menus(void)
 	init_button(mapmenu, 0, "<<<<", 15, 35, 90, 25);
 	init_button(mapmenu, 1, ">>>>", 265, 35, 90, 25);
 	init_button(mapmenu, 2, "Select", 120, 55, 90, 25);
-
-	button_arr[5] = (PGameButton) NULL;
 }
 
 void hide_all(void)
@@ -228,46 +228,35 @@ void game_menu_show(PGameMenu menu, int show)
 	game_menu_mouse_move();
 }
 
-void game_menu_action(PGameMenu menu, int buttonindex)
+int game_menu_action(PGameMenu menu, int buttonindex)
 {
-	int i, count;
+	int i, count, ret = 0;
 	char *s;
-
-	result = 0;
 
 	if(buttonindex >= 0 && menu->button[buttonindex].active)
 	{
-		if(menu == escmenu)
+		if((ret = menu == escmenu))
 		{
-			result = 1;
-
 			switch(buttonindex)
 			{
 				case 1:
-				       	game_menu_show(mapmenu, !mapmenu->active);
+					game_menu_show(mapmenu, !mapmenu->active);
 					break;
 				case 2:
-				       	game_menu_show(kickmenu, !kickmenu->active);
+					game_menu_show(kickmenu, !kickmenu->active);
 					break;
 				case 3:
-					result = (mysprite > 0 && mapchangecounter < 0);
-
-					if(result)
+					if((ret = (mysprite > 0 && mapchangecounter < 0)))
 					{
 						game_menu_show(teammenu, 1);
 						mapchangecounter = -60;
 						selteam = 0;
 					}
-					else if(!mysprite && is_teamgame)
-					{
-						result = 1;
-						game_menu_show(teammenu, 1);
-					}
+					else if((ret = (!mysprite && is_teamgame))) game_menu_show(teammenu, 1);
 			}
 		}
-		else if(menu == teammenu)
+		else if((ret = menu == teammenu))
 		{
-			result = 1;
 			game_menu_show(menu, 0);
 			selteam = buttonindex;
 
@@ -285,19 +274,17 @@ void game_menu_action(PGameMenu menu, int buttonindex)
 					while(!sprite[kickmenuindex].active || sprite[kickmenuindex].player.demoplayer)
 						kickmenuindex = ((MAX_SPRITES + kickmenuindex - 2) % MAX_SPRITES) + 1;
 
-					result = kickmenuindex != 1;
+					ret = kickmenuindex != 1;
 					break;
 				case 1:
 					kickmenuindex = (kickmenuindex % MAX_SPRITES) + 1;
 					while(!sprite[kickmenuindex].active || sprite[kickmenuindex].player.demoplayer)
 						kickmenuindex = (kickmenuindex % MAX_SPRITES) + 1;
 
-					result = kickmenuindex != 1;
+					ret = kickmenuindex != 1;
 					break;
 				case 2:
-					result = kickmenuindex != mysprite;
-
-					if(result)
+					if((ret = kickmenuindex != mysprite))
 					{
 						game_menu_show(escmenu, 0);
 						chattext = "";
@@ -319,7 +306,7 @@ void game_menu_action(PGameMenu menu, int buttonindex)
 						client_vote_map(mapmenuindex);
 					}
 
-					result = kickmenuindex != 0;
+					ret = kickmenuindex != 0;
 					break;
 				case 1:
 					if(mapmenuindex < votemapcount - 1)
@@ -328,7 +315,7 @@ void game_menu_action(PGameMenu menu, int buttonindex)
 						client_vote_map(mapmenuindex);
 					}
 
-					result = mapmenuindex <= votemapcount - 1;
+					ret = mapmenuindex <= votemapcount - 1;
 					break;
 				case 2:
 					game_menu_show(escmenu, 0);
@@ -338,9 +325,8 @@ void game_menu_action(PGameMenu menu, int buttonindex)
 					free(s);
 			}
 		}
-		else if(menu == limbomenu && mysprite > 0)
+		else if((ret = (menu == limbomenu && mysprite > 0)))
 		{
-			result = 1;
 			i = buttonindex + 1;
 
 			if(weaponactive[i] == 1 && weaponsel[mysprite][i] == 1)
@@ -383,8 +369,10 @@ void game_menu_action(PGameMenu menu, int buttonindex)
 			}
 		}
 
-		if(result) PlaySound(SFX_MENUCLICK);
+		if(ret) PlaySound(SFX_MENUCLICK);
 	}
+
+	return ret;
 }
 
 void game_menu_mouse_move(void)
@@ -416,10 +404,10 @@ void game_menu_mouse_move(void)
 			}
 }
 
-void game_menu_click(void)
+int game_menu_click(void)
 {
-	result = 0;
+	int ret = 0;
 
 	if(hoveredbutton)
-		result = game_menu_action(hoveredmenu, hoveredbuttonindex);
+		return ret = game_menu_action(hoveredmenu, hoveredbuttonindex);
 }
