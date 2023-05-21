@@ -15,8 +15,7 @@ typedef struct {
 } TGameMenu;
 typedef TGameMenu *PGameMenu;
 
-TGameMenu *gamemenu;
-PGameMenu hoveredmenu, escmenu, teammenu, limbomenu, kickmenu, mapmenu, *gamemenu_arr;
+PGameMenu hoveredmenu, escmenu, teammenu, limbomenu, kickmenu, mapmenu, *gamemenu;
 PGameButton hoveredbutton, *button_arr;
 int hoveredbuttonindex, kickmenuindex = 0, mapmenuindex = 0, limbowasactive;
 
@@ -38,15 +37,16 @@ void init_game_menus(void)
 	hoveredmenu = (PGameMenu) (hoveredbutton = (PGameButton) NULL);
 	hoveredbuttonindex = 0;
 
-	gamemenu = (TGameMenu *) malloc(sizeof(TGameMenu) * 5 + 1);
-	gamemenu_arr = (PGameMenu *) malloc(sizeof(PGameMenu) * 5 + 1);
-	button_arr = (PGameButton *) malloc(sizeof(PGameButton) * 5 + 1);
-	gamemenu_arr[0] = escmenu = &gamemenu[0];
-	gamemenu_arr[1] = teammenu = &gamemenu[1];
-	gamemenu_arr[2] = limbomenu = &gamemenu[2];
-	gamemenu_arr[3] = kickmenu = &gamemenu[3];
-	gamemenu_arr[4] = mapmenu = &gamemenu[4];
-	button_arr[5] = (PGameButton) (gamemenu_arr[5] = (PGameMenu) NULL);
+	gamemenu = (PGameMenu *) malloc(sizeof(PGameMenu *) * (5 + 1));
+	button_arr = (PGameButton *) malloc(sizeof(PGameButton *) * (5 + 1));
+	for(i = 0; i < 5; i++)
+		gamemenu[i] = (PGameMenu) malloc(sizeof(TGameMenu));
+	button_arr[i] = (PGameButton) (gamemenu[i] = (PGameMenu) NULL);
+	escmenu = gamemenu[0];
+	teammenu = gamemenu[1];
+	limbomenu = gamemenu[2];
+	kickmenu = gamemenu[3];
+	mapmenu = gamemenu[4];
 
 	escmenu->w = 300;
 	escmenu->h = 200;
@@ -132,8 +132,8 @@ void hide_all(void)
 {
 	int i;
 
-	for(i = 0; gamemenu_arr[i]; i++)
-		gamemenu[i].active = 0;
+	for(i = 0; gamemenu[i]; i++)
+		gamemenu[i]->active = 0;
 }
 
 void game_menu_show(PGameMenu menu, int show)
@@ -381,22 +381,21 @@ void game_menu_mouse_move(void)
 	float x, y;
 	PGameButton btn;
 
-	hoveredmenu = NULL;
-	hoveredbutton = NULL;
+	hoveredmenu = (PGameMenu) (hoveredbutton = (PGameButton) NULL);
 	hoveredbuttonindex = 0;
 
 	x = mx * _rscala.x;
 	y = my * _rscala.y;
 
-	for(i = 0; gamemenu_arr[i]; i++)
-		if(gamemenu->active)
+	for(i = 0; gamemenu[i]; i++)
+		if(gamemenu[i]->active)
 			for(j = 0; button_arr[j]; j++)
 			{
-				btn = &gamemenu[i].button[j];
+				btn = button_arr[j];
 
 				if(btn->active && x > btn->x && x < btn->x2 && y > btn->y && y < btn->y2)
 				{
-					hoveredmenu = &gamemenu[i];
+					hoveredmenu = gamemenu[i];
 					hoveredbutton = btn;
 					hoveredbuttonindex = i;
 					return;
