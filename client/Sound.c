@@ -1,22 +1,13 @@
 #include <SDL2/SDL.h>
-#include <AL/al.h>
 #include <AL/alc.h>
+#include <AL/alext.h>
 #include <physfs.h>
+#include "Sound.h"
 
 #define MAX_SOURCES 256
 #define RESERVED_SOURCES 128
 #define MAX_SAMPLES 163
 #define CHANNEL_WEATHER 127
-
-typedef struct {
-	ALuint loaded, buffer;
-	int ret;
-} TSoundSample;
-
-typedef struct {
-	char name[26];
-	TSoundSample samp;
-} TScriptSound;
 
 TSoundSample samp[MAX_SAMPLES];
 TScriptSound *scriptsamp;
@@ -110,6 +101,8 @@ TSoundSample load_sample(char *name, TSoundSample sampload)
 
 		SDL_FreeWAV(databuffer);
 	}
+
+	return ret;
 }
 
 short sound_name_to_id(char *name, int size)

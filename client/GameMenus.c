@@ -1,19 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <SDL2/SDL.h>
-
-typedef struct {
-	int active, x, y, x2, y2;
-	char *caption;
-} TGameButton;
-typedef TGameButton *PGameButton;
-
-typedef struct {
-	int active, x, y, w, h;
-	char *caption;
-	TGameButton *button;
-} TGameMenu;
-typedef TGameMenu *PGameMenu;
+#include "GameMenus.h"
+#include "Sound.h"
 
 PGameMenu hoveredmenu, escmenu, teammenu, limbomenu, kickmenu, mapmenu, *gamemenu;
 PGameButton hoveredbutton, *button_arr;
@@ -153,10 +142,10 @@ void game_menu_show(PGameMenu menu, int show)
 			for(i = 0; i <= MAX_PLAYERS; i++)
 				if(sprite[i].active)
 				{
-					StopSound(sprite[i].reloadsoundchannel);
-					StopSound(sprite[i].jetssoundchannel);
-					StopSound(sprite[i].gattlingsoundchannel);
-					StopSound(sprite[i].gattlingsoundchannel2);
+					stop_sound(sprite[i].reloadsoundchannel);
+					stop_sound(sprite[i].jetssoundchannel);
+					stop_sound(sprite[i].gattlingsoundchannel);
+					stop_sound(sprite[i].gattlingsoundchannel2);
 				}
 
 			if(cl_runs.value < 3)
@@ -369,7 +358,7 @@ int game_menu_action(PGameMenu menu, int buttonindex)
 			}
 		}
 
-		if(ret) PlaySound(SFX_MENUCLICK);
+		if(ret) play_sound(SFX_MENUCLICK);
 	}
 
 	return ret;
