@@ -30,7 +30,7 @@ int init_sound(void)
 
 	if(alGetError() != AL_NO_ERROR) return 0;
 
-	for(i = 0; i <= MAX_SAMPLES; i++)
+	for(i = 0; i < MAX_SAMPLES; i++)
 		samp[i].loaded = 0;
 
 	return 1;
@@ -121,6 +121,11 @@ short sound_name_to_id(char *name, int size)
 	}
 
 	return ret;
+}
+
+float scale_volume_setting(int volumesetting)
+{
+	return (pow(1.0404, volumesetting) - 1) / (1.0404 - 1) / 1275;
 }
 
 void load_sounds(char *moddir)
