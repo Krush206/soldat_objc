@@ -93,7 +93,7 @@ TSoundSample load_sample(char *name, TSoundSample sampload)
 	{
 		if(sampload.loaded)
 		{
-			alDeleteBuffers(1, &samp->buffer);
+			alDeleteBuffers(1, &sampload.buffer);
 			alGenBuffers(1, &ret.buffer);
 			alBufferData(ret.buffer, format, &databuffer, datalength, spec->freq);
 			ret.loaded = 1;
