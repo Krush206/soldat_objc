@@ -1,4 +1,10 @@
 #include <AL/al.h>
+#include <AL/alc.h>
+
+#define MAX_SOURCES 256
+#define RESERVED_SOURCES 128
+#define MAX_SAMPLES 163
+#define CHANNEL_WEATHER 127
 
 typedef struct {
         ALuint loaded, buffer;
@@ -9,6 +15,14 @@ typedef struct {
         char name[26];
         TSoundSample samp;
 } TScriptSound;
+
+TSoundSample samp[MAX_SAMPLES];
+TScriptSound *scriptsamp;
+float volumeinternal;
+ALCdevice *aldevice;
+ALCcontext *alcontext;
+ALuint sources[MAX_SOURCES - 1];
+int defaultchannel = -1;
 
 int init_sound(void);
 short sound_name_to_id(char *);

@@ -93,13 +93,16 @@ typedef struct {
 
 } TGun;
 
+unsigned int defaultwmchecksum, loadedwmchecksum;
+TGun guns[TOTAL_WEAPONS], defaultguns[TOTAL_WEAPONS];
+
 void create_weapons(int);
 void create_default_weapons(int);
 void create_weapons_base(void);
 void create_normal_weapons(void);
 void create_realistic_weapons(void);
 void build_weapons(void);
-long create_wm_checksum(void);
+unsigned int create_wm_checksum(void);
 short weapon_num_to_index(int num);
 int weapon_name_to_num(char *);
 char *weapon_num_to_name(int);

@@ -4,9 +4,6 @@
 #include <math.h>
 #include "Weapons.h"
 
-long defaultwmchecksum, loadedwmchecksum;
-TGun guns[TOTAL_WEAPONS], defaultguns[TOTAL_WEAPONS];
-
 void create_weapons(int realistic)
 {
 	create_weapons_base();
@@ -1130,29 +1127,29 @@ void build_weapons(void)
 	guns[M79].ammocount = 0;
 }
 
-long create_wm_checksum(void)
+unsigned int create_wm_checksum(void)
 {
 	int weaponindex;
-	long hash = 5381;
+	unsigned int hash = 5381;
 	TGun *gun;
 
 	for(weaponindex = 0; weaponindex < ORIGINAL_WEAPONS; weaponindex++)
 	{
 		gun = &guns[weaponindex];
 
-		hash = (hash << 5) + (long) round(1000.0 * gun->hitmultiply);
-		hash = (hash << 5) + (long) round(1000.0 * gun->fireinterval);
-		hash = (hash << 5) + (long) round(1000.0 * gun->ammo);
-		hash = (hash << 5) + (long) round(1000.0 * gun->reloadtime);
-		hash = (hash << 5) + (long) round(1000.0 * gun->speed);
-		hash = (hash << 5) + (long) round(1000.0 * gun->bulletstyle);
-		hash = (hash << 5) + (long) round(1000.0 * gun->startuptime);
-		hash = (hash << 5) + (long) round(1000.0 * gun->bink);
-		hash = (hash << 5) + (long) round(1000.0 * gun->movementacc);
-		hash = (hash << 5) + (long) round(1000.0 * gun->bulletspread);
-		hash = (hash << 5) + (long) round(1000.0 * gun->recoil);
-		hash = (hash << 5) + (long) round(1000.0 * gun->push);
-		hash = (hash << 5) + (long) round(1000.0 * gun->inheritedvelocity);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->hitmultiply);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->fireinterval);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->ammo);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->reloadtime);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->speed);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->bulletstyle);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->startuptime);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->bink);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->movementacc);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->bulletspread);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->recoil);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->push);
+		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->inheritedvelocity);
 	}
 
 	return hash;
@@ -1170,7 +1167,7 @@ short weapon_num_to_index(int num)
 
 int weapon_name_to_num(char *name)
 {
-	int i, j, ret = -1, len = ret;
+	int i, j, ret = -1, len = 0;
 
 	for(i = 0; i < TOTAL_WEAPONS; i++)
 	{
@@ -1179,12 +1176,12 @@ int weapon_name_to_num(char *name)
 			if(name[j] == guns[i].name[j]) len++;
 			else
 			{
-				len = -1;
+				len = 0;
 				break;
 			}
 		}
 
-		if(strlen(name) == len && strlen(guns[i].name) == len) return guns[i].num;
+		if(len && strlen(name) == len && strlen(guns[i].name) == len) return guns[i].num;
 	}
 
 	return ret;
@@ -1192,7 +1189,7 @@ int weapon_name_to_num(char *name)
 
 char *weapon_num_to_name(int num)
 {
-	char *ret = (char *) NULL;
+	char *ret = "";
 
 	switch(num)
 	{
@@ -1260,7 +1257,7 @@ int weapon_num_external_to_internal(int num)
 char *weapon_name_by_num(int num)
 {
 	int weaponindex;
-	char *ret = (char *) NULL;
+	char *ret = "";
 
 	for(weaponindex = 0; weaponindex < TOTAL_WEAPONS; weaponindex++)
 		if(num == guns[weaponindex].num) return ret = guns[weaponindex].name;

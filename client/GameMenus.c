@@ -3,10 +3,7 @@
 #include <SDL2/SDL.h>
 #include "GameMenus.h"
 #include "Sound.h"
-
-PGameMenu hoveredmenu, escmenu, teammenu, limbomenu, kickmenu, mapmenu, *gamemenu;
-PGameButton hoveredbutton, *button_arr;
-int hoveredbuttonindex, kickmenuindex = 0, mapmenuindex = 0, limbowasactive;
+#include "../shared/Weapons.h"
 
 void init_button(PGameMenu menu, int button, char *caption, int x, int y, int w, int h)
 {
@@ -76,7 +73,7 @@ void init_game_menus(void)
 	limbomenu->y = 0;
 
 	button_arr[2] = limbomenu->button = (TGameButton *) malloc(sizeof(TGameButton) * MAIN_WEAPONS);
-	for(i = 0; i <= MAIN_WEAPONS; i++)
+	for(i = 0; i < MAIN_WEAPONS; i++)
 	{
 		if(i < PRIMARY_WEAPONS)
 		{
@@ -139,7 +136,7 @@ void game_menu_show(PGameMenu menu, int show)
 			fragsmenushow = 0;
 			statsmenushow = 0;
 
-			for(i = 0; i <= MAX_PLAYERS; i++)
+			for(i = 0; i < MAX_PLAYERS; i++)
 				if(sprite[i].active)
 				{
 					stop_sound(sprite[i].reloadsoundchannel);
@@ -289,20 +286,12 @@ int game_menu_action(PGameMenu menu, int buttonindex)
 			else switch(buttonindex)
 			{
 				case 0:
-					if(mapmenuindex < 0)
-					{
-						mapmenuindex -= 1;
-						client_vote_map(mapmenuindex);
-					}
+					if(mapmenuindex < 0) client_vote_map(--mapmenuindex);
 
 					ret = kickmenuindex != 0;
 					break;
 				case 1:
-					if(mapmenuindex < votemapcount - 1)
-					{
-						mapmenuindex -= 1;
-						client_vote_map(mapmenuindex);
-					}
+					if(mapmenuindex < votemapcount - 1) client_vote_map(--mapmenuindex);
 
 					ret = mapmenuindex <= votemapcount - 1;
 					break;
@@ -320,7 +309,7 @@ int game_menu_action(PGameMenu menu, int buttonindex)
 
 			if(weaponactive[i] == 1 && weaponsel[mysprite][i] == 1)
 			{
-				if(i <= 10)
+				if(i < 10)
 				{
 					if(weaponactive[i] == 1 && weaponsel[mysprite][i] == 1)
 						sprite[mysprite].selweapon = guns[i].num;
@@ -343,7 +332,7 @@ int game_menu_action(PGameMenu menu, int buttonindex)
 					sprite[mysprite].apply_weapon_by_num(guns[i].num, 2);
 
 					count = 0;
-					for(i = 0; i <= PRIMARY_WEAPONS; i++)
+					for(i = 0; i < PRIMARY_WEAPONS; i++)
 						count += weaponactive[i];
 
 					if(!count)

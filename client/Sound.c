@@ -1,21 +1,9 @@
+#include <math.h>
 #include <SDL2/SDL.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
 #include <physfs.h>
 #include "Sound.h"
-
-#define MAX_SOURCES 256
-#define RESERVED_SOURCES 128
-#define MAX_SAMPLES 163
-#define CHANNEL_WEATHER 127
-
-TSoundSample samp[MAX_SAMPLES];
-TScriptSound *scriptsamp;
-float volumeinternal;
-ALCdevice *aldevice;
-ALCcontext *alcontext;
-ALuint sources[MAX_SOURCES - 1];
-long defaultchannel = -1;
 
 int init_sound(void)
 {
@@ -107,17 +95,23 @@ TSoundSample load_sample(char *name, TSoundSample sampload)
 
 short sound_name_to_id(char *name, int size)
 {
-	int i, j, ret = -1, len = ret;
+	int i, j, ret = -1, len = 0;
 
 	if(!size) return ret;
 
 	for(i = 0; i < size; i++)
 	{
-		for(j = 0; scriptsamp->name[j] && name[j]; j++)
-			if(toupper(scriptsamp->name[j]) == toupper(name[j])) len++;
+		for(j = 0; scriptsamp[i].name[j] && name[j]; j++)
+		{
+			if(toupper(scriptsamp[i].name[j]) == toupper(name[j])) len++;
+			else
+			{
+				len = 0;
+				break;
+			}
+		}
 
-		if(strlen(scriptsamp->name) == len && strlen(name) == len) return ret = i;
-		else len = ret;
+		if(len && strlen(scriptsamp[i].name) == len && strlen(name) == len) return ret = i;
 	}
 
 	return ret;
