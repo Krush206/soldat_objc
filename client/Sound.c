@@ -107,7 +107,7 @@ TSoundSample load_sample(char *name, TSoundSample sampload)
 
 short sound_name_to_id(char *name, int size)
 {
-	int i, j, ret = -1, len = 0;
+	int i, j, ret = -1, len = ret;
 
 	if(!size) return ret;
 
@@ -117,7 +117,7 @@ short sound_name_to_id(char *name, int size)
 			if(toupper(scriptsamp->name[j]) == toupper(name[j])) len++;
 
 		if(strlen(scriptsamp->name) == len && strlen(name) == len) return ret = i;
-		else len = 0;
+		else len = ret;
 	}
 
 	return ret;
