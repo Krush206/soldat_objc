@@ -38,10 +38,18 @@
 - (int) getW
 - (int) getH
 - (NSString *) getCaption
-- (TGameButton *) getButton
+- (NSArray *) getButton
 @end
 
 @interface GameMenus: NSObject
+{
+	int hoveredbuttonindex, kickmenuindex, mapmenuindex;
+	BOOL limbowasactive;
+	TGameMenu *hoveredmenu, *escmenu, *teammenu, *limbomenu, *kickmenu, *mapmenu;
+	TGameButton *hoveredbutton;
+	NSArray *gamemenu;
+}
+
 - (void) init_button: (NSString *) caption x: (int) x y: (int) y w: (int) w h: (int) h
 - (void) init_game_menus;
 - (void) game_menu_show: (TGameMenu *) menu show: (BOOL) show;
@@ -49,8 +57,3 @@
 - (void) game_menu_mouse_move;
 - (BOOL) game_menu_click;
 @end
-
-TGameMenu *hoveredmenu, *escmenu, *teammenu, *limbomenu, *kickmenu, *mapmenu, *gamemenu;
-TGameButton *hoveredbutton;
-int hoveredbuttonindex, kickmenuindex = 0, mapmenuindex = 0;
-BOOL limbowasactive;

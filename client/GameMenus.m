@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <SDL2/SDL.h>
 #import "GameMenus.h"
+#import "Sound.h"
+#import "../shared/Weapons.h"
 
 @implementation TGameButton
 - (void) setActive: (BOOL) o
@@ -133,7 +135,7 @@
 	return caption;
 }
 
-- (TGameButton *) getButton
+- (NSArray *) getButton
 {
 	return button;
 }
@@ -529,3 +531,4 @@
 	if(hoveredbutton)
 		return ret = [self game_menu_action: hoveredmenu buttonIndex: hoveredbuttonindex];
 }
+@end
