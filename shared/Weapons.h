@@ -93,13 +93,15 @@
 	NSString *name, *ininame;
 }
 
++ (void) setGuns: (NSArray *) o;
++ (NSArray *) getGuns;
 - (void) setAmmo: (int) o;
 - (void) setAmmoCount: (int) o;
 - (void) setNum: (int) o;
 - (void) setRecoil: (int) o;
 - (void) setFireInterval: (int) o;
 - (void) setFireIntervalPrev: (int) o;
-- (void) setFireIntevalCount: (int) o;
+- (void) setFireIntervalCount: (int) o;
 - (void) setStartupTime: (int) o;
 - (void) setStartupTimeCount: (int) o;
 - (void) setReloadTime: (int) o;
@@ -136,7 +138,7 @@
 - (int) getRecoil;
 - (int) getFireInterval;
 - (int) getFireIntervalPrev;
-- (int) getFireIntevalCount;
+- (int) getFireIntervalCount;
 - (int) getStartupTime;
 - (int) getStartupTimeCount;
 - (int) getReloadTime;
@@ -175,8 +177,8 @@
 	NSMutableArray *guns, *defaultguns;
 }
 
-- (void) create_weapons: (int) realistic;
-- (void) create_default_weapons: (int) realistic;
+- (void) create_weapons: (BOOL) realistic;
+- (void) create_default_weapons: (BOOL) realistic;
 - (void) create_weapons_base;
 - (void) create_normal_weapons;
 - (void) create_realistic_weapons;
@@ -186,9 +188,9 @@
 - (int) weapon_name_to_num: (NSString *) name;
 - (NSString *) weapon_num_to_name: (int) num;
 - (NSString *) weapon_name_by_num: (int) num;
-- (int) is_main_weapon_index: (short) index;
-- (int) is_secondary_weapon_index: (short) index;
-- (int) is_extended_weapon_index: (short) index;
+- (int) is_main_weapon_index: (int) index;
+- (int) is_secondary_weapon_index: (int) index;
+- (int) is_extended_weapon_index: (int) index;
 - (int) calculate_bink: (int) accumulated bink: (short) bink;
 - (int) weapon_num_internal_to_external: (int) num;
 - (int) weapon_num_external_to_internal: (int) num;

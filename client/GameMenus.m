@@ -22,12 +22,12 @@
 
 - (void) setX2: (int) o
 {
-	w = o;
+	x2 = o;
 }
 
 - (void) setY2: (int) o
 {
-	h = o;
+	y2 = o;
 }
 
 - (void) setCaption: (NSString *) o
@@ -52,12 +52,12 @@
 
 - (int) getX2
 {
-	return w;
+	return x2;
 }
 
 - (int) getY2
 {
-	return h;
+	return y2;
 }
 
 - (NSString *) getCaption
@@ -142,11 +142,11 @@
 @end
 
 @implementation GameMenus
-- (TGameButton *) init_button: (NSString *) caption x: (int) x y: (int) y w: (int) w h: (int) h
+- (TGameButton *) init_button: (TGameMenu *) menu caption: (NSString *) caption x: (int) x y: (int) y w: (int) w h: (int) h
 {
 	TGameButton *button = [TGameButton new];
 	[button setActive: YES];
-	[button setX: [menu getY] + y];
+	[button setX: [menu getX] + x];
 	[button setY: [menu getY] + y];
 	[button setX2: [menu getX] + x + w];
 	[button setY2: [menu getY] + y + h];
@@ -159,7 +159,8 @@
 {
 	int i;
 
-	hoveredmenu = hoveredbutton = NULL;
+	hoveredmenu = NULL;
+	hoveredbutton = NULL;
 	hoveredbuttonindex = 0;
 
 	escmenu = [TGameMenu new];
@@ -183,13 +184,13 @@
 		[escmenu setY: (renderheight - [escmenu getH]) / 2];
 	}
 	
-	[escmenu setButton: [self init_button:
+	[escmenu setButton: [self init_button: escmenu
 	caption: @"1 Exit to menu" x: 5 y: 1 * 25 w: 240 h: 25]];
-	[escmenu setButton: [self init_button:
+	[escmenu setButton: [self init_button: escmenu
 	caption: @"2 Change map" x: 5 y: 2 * 25 w: 240 h: 25]];
-	[escmenu setButton: [self init_button:
+	[escmenu setButton: [self init_button: escmenu
 	caption: @"3 Kick player" x: 5 y: 3 * 25 w: 240 h: 25]];
-	[escmenu setButton: [self init_button:
+	[escmenu setButton: [self init_button: escmenu
 	caption: @"4 Change team" x: 5 y: 4 * 25 w: 240 h: 25]];
 
 	[teammenu setW: 0];
@@ -197,17 +198,17 @@
 	[teammenu setX: 0];
 	[teammenu setY: 0];
 
-	[teammenu setButton: [self init_button:
+	[teammenu setButton: [self init_button: teammenu
 	caption: @"0 Player" x: 40 y: 140 + 40 * 1 w: 215 h: 35]];
-	[teammenu setButton: [self init_button:
+	[teammenu setButton: [self init_button: teammenu
 	caption: @"1 Alpha Team" x: 40 y: 140 + 40 * 1 w: 215 h: 35]];
-	[teammenu setButton: [self init_button:
+	[teammenu setButton: [self init_button: teammenu
 	caption: @"2 Bravo Team" x: 40 y: 140 + 40 * 2 w: 215 h: 35]];
-	[teammenu setButton: [self init_button:
+	[teammenu setButton: [self init_button: teammenu
 	caption: @"3 Charlie Team" x: 40 y: 140 + 40 * 3 w: 215 h: 35]];
-	[teammenu setButton: [self init_button:
+	[teammenu setButton: [self init_button: teammenu
 	caption: @"4 Delta Team" x: 40 y: 140 + 40 * 4 w: 215 h: 35]];
-	[teammenu setButton: [self init_button:
+	[teammenu setButton: [self init_button: teammenu
 	caption: @"5 Spectator" x: 40 y: 140 + 40 * 5 w: 215 h: 35]];
 
 	[limbomenu setW: 0];
@@ -220,11 +221,11 @@
 		NSString *s;
 
 		if(i < PRIMARY_WEAPONS)
-			s = [[NSString alloc] initWithFormat: @"%d %@", i, [guns objectAtIndex: i]];
+			s = [[NSString alloc] initWithFormat: @"%d %@", i, [[TGun getGuns] objectAtIndex: i]];
 		else
-			s = [[NSString alloc] initWithFormat: @"%@", [guns objectAtIndex: i]];
+			s = [[NSString alloc] initWithString: [[TGun getGuns] objectAtIndex: i]];
 
-		[limbomenu setButton: [self init_button:
+		[limbomenu setButton: [self init_button: limbomenu
 		caption: s x: 35 y: 154 + 18 * i w: 235 h: 15]];
 	}
 
@@ -233,13 +234,13 @@
 	[kickmenu setX: 125];
 	[kickmenu setY: 355];
 
-	[kickmenu setButton: [self init_button:
+	[kickmenu setButton: [self init_button: kickmenu
 	caption: @"<<<<" x: 15 y: 35 w: 90 h: 25]];
-	[kickmenu setButoon: [self init_button:
+	[kickmenu setButton: [self init_button: kickmenu
 	caption: @">>>>" x: 265 y: 35 w: 90 h: 25]];
-	[kickmenu setButton: [self init_button:
+	[kickmenu setButton: [self init_button: kickmenu
 	caption: @"Kick" x: 105 y: 55 w: 90 h: 25]];
-	[kickmenu setButton: [self init_button:
+	[kickmenu setButton: [self init_button: kickmenu
 	caption: @"Ban" x: 195 y: 55 w: 80 h: 25]];
 
 	[mapmenu setW: 370];
@@ -247,11 +248,11 @@
 	[mapmenu setX: 125];
 	[mapmenu setW: 355];
 
-	[mapmenu setButton: [self init_button:
+	[mapmenu setButton: [self init_button: mapmenu
 	caption: @"<<<<" x: 15 y: 35 w: 90 h: 25]];
-	[mapmenu setButton: [self init_button:
-	caption: @">>>>" h: 265 y: 35 w: 90 h: 25]];
-	[mapmenu setButton: [self init_button:
+	[mapmenu setButton: [self init_button: mapmenu
+	caption: @">>>>" x: 265 y: 35 w: 90 h: 25]];
+	[mapmenu setButton: [self init_button: mapmenu
 	caption: @"Select" x: 120 y: 55 w: 90 h: 25]];
 }
 
@@ -265,12 +266,12 @@
 
 - (void) game_menu_show: (TGameMenu *) menu show: (BOOL) show
 {
-	int i;
-
 	if([menu isEqualTo: escmenu])
 	{
 		if(show)
 		{
+			int i;
+
 			if([limbomenu getActive])
 				limbowasactive = YES;
 
@@ -309,25 +310,25 @@
 				case GAMESTYLE_CTF:
 				case GAMESTYLE_INF:
 				case GAMESTYLE_HTF:
-					[[menu getButton] setActive: NO];
-					[[menu getButton] setActive: YES];
-					[[menu getButton] setActive: YES];
-					[[menu getButton] setActive: NO];
-					[[menu getButton] setActive: NO];
+					[[[menu getButton] objectAtIndex: 0] setActive: NO];
+					[[[menu getButton] objectAtIndex: 1] setActive: YES];
+					[[[menu getButton] objectAtIndex: 2] setActive: YES];
+					[[[menu getButton] objectAtIndex: 3] setActive: NO];
+					[[[menu getButton] objectAtIndex: 4] setActive: NO];
 					break;
 				case GAMESTYLE_TEAMMATCH:
-					[[menu getButton] setActive: NO];
-					[[menu getButton] setActive: YES];
-					[[menu getButton] setActive: YES];
-					[[menu getButton] setActive: YES];
-					[[menu getButton] setActive: YES];
+					[[[menu getButton] objectAtIndex: 0] setActive: NO];
+					[[[menu getButton] objectAtIndex: 1] setActive: YES];
+					[[[menu getButton] objectAtIndex: 2] setActive: YES];
+					[[[menu getButton] objectAtIndex: 3] setActive: YES];
+					[[[menu getButton] objectAtIndex: 4] setActive: YES];
 					break;
 				default:
-					[[menu getButton] setActive: YES];
-					[[menu getButton] setActive: NO];
-					[[menu getButton] setActive: NO];
-					[[menu getButton] setActive: NO];
-					[[menu getButton] setActive: NO];
+					[[[menu getButton] objectAtIndex: 0] setActive: YES];
+					[[[menu getButton] objectAtIndex: 1] setActive: NO];
+					[[[menu getButton] objectAtIndex: 2] setActive: NO];
+					[[[menu getButton] objectAtIndex: 3] setActive: NO];
+					[[[menu getButton] objectAtIndex: 4] setActive: NO];
 			}
 	}
 	else if([menu isEqualTo: mapmenu] && show)
@@ -358,7 +359,7 @@
 
 - (BOOL) game_menu_action: (TGameMenu *) menu buttonIndex: (int) buttonindex
 {
-	int i, count, ret = 0;
+	int i, ret = 0;
 
 	if(buttonindex >= 0 && [[[menu getButton] objectAtIndex: buttonindex] getActive])
 	{
@@ -470,11 +471,12 @@
 				}
 				else
 				{
+					int count = 0;
+
 					cl_player_secwep(i - 11);
 					sprite[mysprite].player.secwep = i - 11;
 					sprite[mysprite].apply_weapon_by_num(guns[i].num, 2);
 
-					count = 0;
 					for(i = 0; i < PRIMARY_WEAPONS; i++)
 						count += weaponactive[i];
 
@@ -498,11 +500,12 @@
 
 - (void) game_menu_mouse_move
 {
-	int i, j;
+	int i;
 	float x, y;
 	TGameButton *btn;
 
-	hoveredmenu = hoveredbutton = NULL;
+	hoveredmenu = NULL;
+	hoveredbutton = NULL;
 	hoveredbuttonindex = 0;
 
 	x = mx * _rscala.x;
@@ -510,6 +513,9 @@
 
 	for(i = 0; i < [gamemenu count]; i++)
 		if([[gamemenu objectAtIndex: i] getActive])
+		{
+			int j;
+
 			for(j = 0; j < [[[gamemenu objectAtIndex: i] getButton] count]; j++)
 			{
 				btn = [[[gamemenu objectAtIndex: i] getButton] objectAtIndex: j];
@@ -522,6 +528,7 @@
 					return;
 				}
 			}
+		}
 }
 
 - (BOOL) game_menu_click

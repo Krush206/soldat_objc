@@ -2,6 +2,28 @@
 #import "Weapons.h"
 
 @implementation TGun
+static NSArray *guns, *defaultguns;
+
++ (void) setDefaultGuns: (NSArray *) o
+{
+	defaultguns = o;
+}
+
++ (NSArray *) getDefaultGuns
+{
+	return defaultguns;
+}
+
++ (void) setGuns: (NSArray *) o
+{
+	guns = o;
+}
+
++ (NSArray *) getGuns
+{
+	return guns;
+}
+
 - (void) setAmmo: (int) o
 {
 	ammo = o;
@@ -32,7 +54,7 @@
 	fireintervalprev = o;
 }
 
-- (void) setFireIntevalCount: (int) o
+- (void) setFireIntervalCount: (int) o
 {
 	fireintervalcount = o;
 }
@@ -217,7 +239,7 @@
 	return fireintervalprev;
 }
 
-- (int) getFireIntevalCount
+- (int) getFireIntervalCount
 {
 	return fireintervalcount;
 }
@@ -413,6 +435,7 @@
 		[defaultguns addObject: defaultgun];
 	}
 
+	[TGun setDefaultGuns: defaultguns];
 	[self build_weapons];
 }
 
@@ -425,7 +448,7 @@
 	[gun setININame: @"Desert Eagles"];
 	[gun setNum: EAGLE_NUM];
 	[gun setTextureNum: GFX_WEAPONS_DEAGLES];
-	[gun setClipTextureNum GFX_WEAPONS_DEAGLES_CLIP];
+	[gun setClipTextureNum: GFX_WEAPONS_DEAGLES_CLIP];
 	[gun setClipReload: YES];
 	[gun setBulletImageStyle: GFX_WEAPONS_DEAGLES_BULLET];
 	[gun setFireStyle: GFX_WEAPONS_DEAGLES_FIRE];
@@ -544,7 +567,7 @@
 	[gun setName: @"USSOCOM"];
 	[gun setININame: @"USSOCOM"];
 	[gun setNum: COLT_NUM];
-	[gun setTextureName: GFX_WEAPONS_SOCOM];
+	[gun setTextureNum: GFX_WEAPONS_SOCOM];
 	[gun setClipTextureNum: GFX_WEAPONS_SOCOM_CLIP];
 	[gun setClipReload: YES];
 	[gun setBulletImageStyle: GFX_WEAPONS_SOCOM_BULLET];
@@ -666,7 +689,7 @@
 	[gun setNum: CLUSTERGRENADE_NUM];
 	[gun setTextureNum: GFX_WEAPONS_FRAG_GRENADE];
 	[gun setClipTextureNum: GFX_WEAPONS_FRAG_GRENADE];
-	[gun setClipReload: NI];
+	[gun setClipReload: NO];
 	[gun setBulletImageStyle: 0];
 	[gun setFireStyle: GFX_WEAPONS_AK74_FIRE];
 	[gun setFireMode: 0];
@@ -695,6 +718,8 @@
 	[gun setFireStyle: 0];
 	[gun setFireMode: 0];
 	[guns addObject: gun];
+
+	[TGun setGuns: [guns copy]];
 }
 
 - (void) create_normal_weapons
@@ -1444,9 +1469,9 @@
 	[gun setPush: [[guns objectAtIndex: FRAGGRENADE] getPush]];
 	[gun setInheritedVelocity: [[guns objectAtIndex: FRAGGRENADE] getInheritedVelocity]];
 
-	gun: [guns objectAtIndex: CLUSTER];
+	gun = [guns objectAtIndex: CLUSTER];
 	[gun setHitMultiply: [[guns objectAtIndex: CLUSTERGRENADE] getHitMultiply]];
-	[gun setFireInterval: [[guns objectAtIndex: CLUSTERGRENADE] getFireinterval]];
+	[gun setFireInterval: [[guns objectAtIndex: CLUSTERGRENADE] getFireInterval]];
 	[gun setAmmo: [[guns objectAtIndex: CLUSTERGRENADE] getAmmo]];
 	[gun setReloadTime: [[guns objectAtIndex: CLUSTERGRENADE] getReloadTime]];
 	[gun setSpeed: [[guns objectAtIndex: CLUSTERGRENADE] getSpeed]];
@@ -1459,7 +1484,7 @@
 	[gun setPush: [[guns objectAtIndex: CLUSTERGRENADE] getPush]];
 	[gun setInheritedVelocity: [[guns objectAtIndex: CLUSTERGRENADE] getInheritedVelocity]];
 
-	gun: [guns objectAtIndex: THROWNKNIFE];
+	gun = [guns objectAtIndex: THROWNKNIFE];
 	[gun setHitMultiply: [[guns objectAtIndex: KNIFE] getHitMultiply]];
 	[gun setFireInterval: [[guns objectAtIndex: KNIFE] getFireInterval]];
 	[gun setAmmo: [[guns objectAtIndex: KNIFE] getAmmo]];
@@ -1474,21 +1499,21 @@
 	[gun setPush: [[guns objectAtIndex: KNIFE] getPush]];
 	[gun setInheritedVelocity: [[guns objectAtIndex: KNIFE] getInheritedVelocity]];
 
-	for(weaponindex: 0; weaponindex < TOTAL_WEAPONS; weaponindex++)
+	for(weaponindex = 0; weaponindex < TOTAL_WEAPONS; weaponindex++)
 	{
-		gun: &guns[weaponindex];
+		gun = [guns objectAtIndex: weaponindex];
 
 		[gun setFireIntervalPrev: [gun getFireInterval]];
 		[gun setFireIntervalCount: [gun getFireInterval]];
 		[gun setAmmoCount: [gun getAmmo]];
-		[gun ReloadTimePrev: [gun getReloadTime]];
-		[gun ReloadTimeCount: [gun getReloadTime]];
-		[gun StartupTimeCount: [gun getStartupTime]];
+		[gun setReloadTimePrev: [gun getReloadTime]];
+		[gun setReloadTimeCount: [gun getReloadTime]];
+		[gun setStartupTimeCount: [gun getStartupTime]];
 
 		if([gun getClipReload])
 		{
-			[gun setClipOutTime: trunc([gun getReloadTime] * 0.8);
-			[gun setClipInTime: trunc([gun getReloadTime] * 0.3);
+			[gun setClipOutTime: trunc([gun getReloadTime] * 0.8)];
+			[gun setClipInTime: trunc([gun getReloadTime] * 0.3)];
 		}
 		else
 		{
@@ -1496,7 +1521,7 @@
 			[gun setClipInTime: 0];
 		}
 
-		switch([gun bulletstyle)
+		switch([gun getBulletStyle])
 		{
 			case BULLET_STYLE_FRAGNADE:
 			case BULLET_STYLE_CLUSTERNADE:
