@@ -1,3 +1,6 @@
+#ifndef GAMEMENUS_H
+#define GAMEMENUS_H
+
 typedef struct {
         int active, x, y, x2, y2;
         char *caption;
@@ -11,12 +14,14 @@ typedef struct {
 } TGameMenu;
 typedef TGameMenu *PGameMenu;
 
-PGameMenu hoveredmenu, escmenu, teammenu, limbomenu, kickmenu, mapmenu, *gamemenu;
-PGameButton hoveredbutton, *button_arr;
-int hoveredbuttonindex, kickmenuindex = 0, mapmenuindex = 0, limbowasactive;
+extern PGameMenu hoveredmenu, escmenu, teammenu, limbomenu, kickmenu, mapmenu, *gamemenu;
+extern PGameButton hoveredbutton, *button_arr;
+extern int hoveredbuttonindex, kickmenuindex, mapmenuindex, limbowasactive;
 
 void init_game_menus(void);
 void game_menu_show(PGameMenu, int);
 int game_menu_action(PGameMenu, int);
 void game_menu_mouse_move(void);
 int game_menu_click(void);
+
+#endif /* GAMEMENUS_H */
