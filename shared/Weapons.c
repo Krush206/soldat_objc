@@ -2,7 +2,35 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+#ifndef GFX_WEAPONS_SOCOM_BULLET
+#define GFX_WEAPONS_SOCOM_BULLET 0
+#endif
+#ifndef BULLET_STYLE_THROWNKNIFE
+#define BULLET_STYLE_THROWNKNIFE BULLET_STYLE_THROWKNIFE
+#endif
+#ifndef GRENADE_TIMEOUT
+#define GRENADE_TIMEOUT 180
+#endif
+#ifndef FLAME_TIMEOUT
+#define FLAME_TIMEOUT 90
+#endif
+#ifndef MELEE_TIMEOUT
+#define MELEE_TIMEOUT 30
+#endif
+#ifndef M2BULLET_TIMEOUT
+#define M2BULLET_TIMEOUT 180
+#endif
+#ifndef BULLET_TIMEOUT
+#define BULLET_TIMEOUT 180
+#endif
+
 #include "Weapons.h"
+#include "GfxData.h"
+
+TGun guns[TOTAL_WEAPONS];
+TGun defaultguns[TOTAL_WEAPONS];
+unsigned int defaultwmchecksum, loadedwmchecksum;
 
 void create_weapons(int realistic)
 {
@@ -15,8 +43,10 @@ void create_default_weapons(int realistic)
 	int weaponindex;
 	TGun *gun, *defaultgun;
 
-	if(realistic) create_realistic_weapons();
-	else create_normal_weapons();
+	if(realistic)
+		create_realistic_weapons();
+	else
+		create_normal_weapons();
 
 	for(weaponindex = 0; weaponindex < TOTAL_WEAPONS; weaponindex++)
 	{
@@ -40,7 +70,6 @@ void create_default_weapons(int realistic)
 		defaultgun->modifierchest = gun->modifierchest;
 		defaultgun->modifierhead = gun->modifierhead;
 	}
-
 	build_weapons();
 }
 
@@ -49,8 +78,7 @@ void create_weapons_base(void)
 	TGun *gun;
 
 	gun = &guns[EAGLE];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Desert Eagles");
-	sprintf(gun->name, "Desert Eagles");
+	gun->ininame = gun->name = alloc_weapon_name("Desert Eagles");
 	gun->num = EAGLE_NUM;
 	gun->texturenum = GFX_WEAPONS_DEAGLES;
 	gun->cliptexturenum = GFX_WEAPONS_DEAGLES_CLIP;
@@ -60,8 +88,7 @@ void create_weapons_base(void)
 	gun->firemode = 2;
 
 	gun = &guns[MP5];
-	gun->ininame = gun->name = (char *) malloc(sizeof "HK MP5");
-	sprintf(gun->name, "HK MP5");
+	gun->ininame = gun->name = alloc_weapon_name("HK MP5");
 	gun->num = MP5_NUM;
 	gun->texturenum = GFX_WEAPONS_MP5;
 	gun->cliptexturenum = GFX_WEAPONS_MP5_CLIP;
@@ -71,8 +98,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[AK74];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Ak-74");
-	sprintf(gun->name, "Ak-74");
+	gun->ininame = gun->name = alloc_weapon_name("Ak-74");
 	gun->num = AK74_NUM;
 	gun->texturenum = GFX_WEAPONS_AK74;
 	gun->cliptexturenum = GFX_WEAPONS_AK74_CLIP;
@@ -82,8 +108,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[STEYRAUG];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Steyr AUG");
-	sprintf(gun->name, "Steyer AUG");
+	gun->ininame = gun->name = alloc_weapon_name("Steyr AUG");
 	gun->num = STEYRAUG_NUM;
 	gun->texturenum = GFX_WEAPONS_STEYR;
 	gun->cliptexturenum = GFX_WEAPONS_STEYR_CLIP;
@@ -93,8 +118,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[SPAS12];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Spas-12");
-	sprintf(gun->name, "Spas-12");
+	gun->ininame = gun->name = alloc_weapon_name("Spas-12");
 	gun->num = SPAS12_NUM;
 	gun->texturenum = GFX_WEAPONS_SPAS;
 	gun->cliptexturenum = 0;
@@ -104,8 +128,7 @@ void create_weapons_base(void)
 	gun->firemode = 2;
 
 	gun = &guns[RUGER77];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Ruger 77");
-	sprintf(gun->name, "Ruger 77");
+	gun->ininame = gun->name = alloc_weapon_name("Ruger 77");
 	gun->num = RUGER77_NUM;
 	gun->texturenum = GFX_WEAPONS_RUGER;
 	gun->cliptexturenum = 0;
@@ -115,8 +138,7 @@ void create_weapons_base(void)
 	gun->firemode = 2;
 
 	gun = &guns[M79];
-	gun->ininame = gun->name = (char *) malloc(sizeof "M79");
-	sprintf(gun->name, "M79");
+	gun->ininame = gun->name = alloc_weapon_name("M79");
 	gun->num = M79_NUM;
 	gun->texturenum = GFX_WEAPONS_M79;
 	gun->cliptexturenum = GFX_WEAPONS_M79_CLIP;
@@ -126,8 +148,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[BARRETT];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Barrett M82A1");
-	sprintf(gun->name, "Barrett M82A1");
+	gun->ininame = gun->name = alloc_weapon_name("Barrett M82A1");
 	gun->num = BARRETT_NUM;
 	gun->texturenum = GFX_WEAPONS_BARRETT;
 	gun->cliptexturenum = GFX_WEAPONS_BARRETT_CLIP;
@@ -137,8 +158,7 @@ void create_weapons_base(void)
 	gun->firemode = 2;
 
 	gun = &guns[M249];
-	gun->ininame = gun->name = (char *) malloc(sizeof "FN Minimi");
-	sprintf(gun->name, "FN Minimi");
+	gun->ininame = gun->name = alloc_weapon_name("FN Minimi");
 	gun->num = M249_NUM;
 	gun->texturenum = GFX_WEAPONS_MINIMI;
 	gun->cliptexturenum = GFX_WEAPONS_MINIMI_CLIP;
@@ -148,8 +168,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[MINIGUN];
-	gun->ininame = gun->name = (char *) malloc(sizeof "XM214 Minigun");
-	sprintf(gun->name, "XM214 Minigun");
+	gun->ininame = gun->name = alloc_weapon_name("XM214 Minigun");
 	gun->num = MINIGUN_NUM;
 	gun->texturenum = GFX_WEAPONS_MINIGUN;
 	gun->cliptexturenum = GFX_WEAPONS_MINIGUN_CLIP;
@@ -159,8 +178,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[COLT];
-	gun->ininame = gun->name = (char *) malloc(sizeof "USSOCOM");
-	sprintf(gun->name, "USSOCOM");
+	gun->ininame = gun->name = alloc_weapon_name("USSOCOM");
 	gun->num = COLT_NUM;
 	gun->texturenum = GFX_WEAPONS_SOCOM;
 	gun->cliptexturenum = GFX_WEAPONS_SOCOM_CLIP;
@@ -170,8 +188,7 @@ void create_weapons_base(void)
 	gun->firemode = 2;
 
 	gun = &guns[KNIFE];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Combat Knife");
-	sprintf(gun->name, "Combat Knife");
+	gun->ininame = gun->name = alloc_weapon_name("Combat Knife");
 	gun->num = KNIFE_NUM;
 	gun->texturenum = GFX_WEAPONS_KNIFE;
 	gun->cliptexturenum = 0;
@@ -181,8 +198,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[CHAINSAW];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Chainsaw");
-	sprintf(gun->name, "Chainsaw");
+	gun->ininame = gun->name = alloc_weapon_name("Chainsaw");
 	gun->num = CHAINSAW_NUM;
 	gun->texturenum = GFX_WEAPONS_CHAINSAW;
 	gun->cliptexturenum = 0;
@@ -192,8 +208,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[LAW];
-	gun->ininame = gun->name = (char *) malloc(sizeof "M72 LAW");
-	sprintf(gun->name, "M72 LAW");
+	gun->ininame = gun->name = alloc_weapon_name("M72 LAW");
 	gun->num = LAW_NUM;
 	gun->texturenum = GFX_WEAPONS_LAW;
 	gun->cliptexturenum = 0;
@@ -203,8 +218,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[BOW2];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Flame Bow");
-	sprintf(gun->name, "Flame Bow");
+	gun->ininame = gun->name = alloc_weapon_name("Flame Bow");
 	gun->num = BOW2_NUM;
 	gun->texturenum = GFX_WEAPONS_BOW;
 	gun->cliptexturenum = GFX_WEAPONS_BOW_S;
@@ -214,8 +228,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[BOW];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Bow");
-	sprintf(gun->name, "Bow");
+	gun->ininame = gun->name = alloc_weapon_name("Bow");
 	gun->num = BOW_NUM;
 	gun->texturenum = GFX_WEAPONS_BOW;
 	gun->cliptexturenum = GFX_WEAPONS_BOW_S;
@@ -225,8 +238,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[FLAMER];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Flamer");
-	sprintf(gun->name, "Flamer");
+	gun->ininame = gun->name = alloc_weapon_name("Flamer");
 	gun->num = FLAMER_NUM;
 	gun->texturenum = GFX_WEAPONS_FLAMER;
 	gun->cliptexturenum = GFX_WEAPONS_FLAMER;
@@ -236,8 +248,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[M2];
-	gun->ininame = gun->name = (char *) malloc(sizeof "M2");
-	sprintf(gun->name, "M2");
+	gun->ininame = gun->name = alloc_weapon_name("M2");
 	gun->num = M2_NUM;
 	gun->texturenum = GFX_WEAPONS_MINIGUN;
 	gun->cliptexturenum = 0;
@@ -247,8 +258,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[NOWEAPON];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Punch");
-	sprintf(gun->name, "Punch");
+	gun->ininame = gun->name = alloc_weapon_name("Punch");
 	gun->num = NOWEAPON_NUM;
 	gun->texturenum = 0;
 	gun->cliptexturenum = 0;
@@ -258,8 +268,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[FRAGGRENADE];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Frag Grenade");
-	sprintf(gun->name, "Frag Grenade");
+	gun->ininame = gun->name = alloc_weapon_name("Frag Grenade");
 	gun->num = FRAGGRENADE_NUM;
 	gun->texturenum = GFX_WEAPONS_FRAG_GRENADE;
 	gun->cliptexturenum = GFX_WEAPONS_FRAG_GRENADE;
@@ -269,8 +278,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[CLUSTERGRENADE];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Frag Grenade");
-	sprintf(gun->name, "Frag Grenade");
+	gun->ininame = gun->name = alloc_weapon_name("Frag Grenade");
 	gun->num = CLUSTERGRENADE_NUM;
 	gun->texturenum = GFX_WEAPONS_FRAG_GRENADE;
 	gun->cliptexturenum = GFX_WEAPONS_FRAG_GRENADE;
@@ -280,8 +288,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[CLUSTER];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Frag Grenade");
-	sprintf(gun->name, "Frag Grenade");
+	gun->ininame = gun->name = alloc_weapon_name("Frag Grenade");
 	gun->num = CLUSTER_NUM;
 	gun->texturenum = GFX_WEAPONS_FRAG_GRENADE;
 	gun->cliptexturenum = GFX_WEAPONS_FRAG_GRENADE;
@@ -291,8 +298,7 @@ void create_weapons_base(void)
 	gun->firemode = 0;
 
 	gun = &guns[THROWNKNIFE];
-	gun->ininame = gun->name = (char *) malloc(sizeof "Combat Knife");
-	sprintf(gun->name, "Combat Knife");
+	gun->ininame = gun->name = alloc_weapon_name("Combat Knife");
 	gun->num = THROWNKNIFE_NUM;
 	gun->texturenum = GFX_WEAPONS_KNIFE;
 	gun->cliptexturenum = 0;
@@ -1123,164 +1129,182 @@ void build_weapons(void)
 			default: gun->timeout = BULLET_TIMEOUT;
 		}
 	}
-
 	guns[M79].ammocount = 0;
 }
 
 unsigned int create_wm_checksum(void)
 {
 	int weaponindex;
-	unsigned int hash = 5381;
+	long hash;
 	TGun *gun;
 
+	hash = 5381;
 	for(weaponindex = 0; weaponindex < ORIGINAL_WEAPONS; weaponindex++)
 	{
 		gun = &guns[weaponindex];
 
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->hitmultiply);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->fireinterval);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->ammo);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->reloadtime);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->speed);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->bulletstyle);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->startuptime);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->bink);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->movementacc);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->bulletspread);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->recoil);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->push);
-		hash = (hash << 5) + (unsigned int) round(1000.0 * gun->inheritedvelocity);
+		hash += (hash << 5) + (long) round(1000.0 * gun->hitmultiply);
+		hash += (hash << 5) + (long) round(1000.0 * gun->fireinterval);
+		hash += (hash << 5) + (long) round(1000.0 * gun->ammo);
+		hash += (hash << 5) + (long) round(1000.0 * gun->reloadtime);
+		hash += (hash << 5) + (long) round(1000.0 * gun->speed);
+		hash += (hash << 5) + (long) round(1000.0 * gun->bulletstyle);
+		hash += (hash << 5) + (long) round(1000.0 * gun->startuptime);
+		hash += (hash << 5) + (long) round(1000.0 * gun->bink);
+		hash += (hash << 5) + (long) round(1000.0 * gun->movementacc);
+		hash += (hash << 5) + (long) round(1000.0 * gun->bulletspread);
+		hash += (hash << 5) + (long) round(1000.0 * gun->recoil);
+		hash += (hash << 5) + (long) round(1000.0 * gun->push);
+		hash += (hash << 5) + (long) round(1000.0 * gun->inheritedvelocity);
 	}
-
 	return hash;
 }
 
 short weapon_num_to_index(int num)
 {
-	int ret = -1, weaponindex;
+	int ret, weaponindex;
 
+	ret = -1;
 	for(weaponindex = 0; weaponindex < TOTAL_WEAPONS; weaponindex++)
-		if(num == guns[weaponindex].num) return ret = weaponindex;
-
+		if(num == guns[weaponindex].num)
+		{
+			ret = weaponindex;
+			break;
+		}
 	return ret;
 }
 
 int weapon_name_to_num(char *name)
 {
-	int i, j, ret = -1, len = 0;
+	int i, j, ret, len;
 
+	ret = -1;
+	len = 0;
 	for(i = 0; i < TOTAL_WEAPONS; i++)
 	{
-		for(j = 0; name[j] && guns[i].name[j]; j++)
+		for(j = 0; name[j] != '\0' && guns[i].name[j] != '\0'; j++)
 		{
-			if(name[j] == guns[i].name[j]) len++;
+			if(name[j] == guns[i].name[j])
+				len++;
 			else
 			{
 				len = 0;
 				break;
 			}
 		}
-
-		if(len && strlen(name) == len && strlen(guns[i].name) == len) return guns[i].num;
+		if(len > 0 && strlen(name) == len && strlen(guns[i].name) == len)
+		{
+			ret = guns[i].num;
+			break;
+		}
 	}
-
 	return ret;
 }
 
 char *weapon_num_to_name(int num)
 {
-	char *ret = "";
+	char *ret;
 
+	ret = NULL;
 	switch(num)
 	{
-		case EAGLE_NUM: return guns[EAGLE].name;
-		case MP5_NUM: return guns[MP5].name;
-		case AK74_NUM: return guns[AK74].name;
-		case STEYRAUG_NUM: return guns[STEYRAUG].name;
-		case SPAS12_NUM: return guns[SPAS12].name;
-		case RUGER77_NUM: return guns[RUGER77].name;
-		case M79_NUM: return guns[M79].name;
-		case BARRETT_NUM: return guns[BARRETT].name;
-		case M249_NUM: return guns[M249].name;
-		case MINIGUN_NUM: return guns[MINIGUN].name;
-		case COLT_NUM: return guns[COLT].name;
-		case KNIFE_NUM: return guns[KNIFE].name;
-		case CHAINSAW_NUM: return guns[CHAINSAW].name;
-		case LAW_NUM: return guns[LAW].name;
-		case BOW2_NUM: return guns[BOW2].name;
-		case BOW_NUM: return guns[BOW].name;
-		case FLAMER_NUM: return guns[FLAMER].name;
-		case M2_NUM: return guns[M2].name;
-		case NOWEAPON_NUM: return guns[NOWEAPON].name;
-		case FRAGGRENADE_NUM: return guns[FRAGGRENADE].name;
-		case CLUSTERGRENADE_NUM: return guns[CLUSTERGRENADE].name;
-		case CLUSTER_NUM: return guns[CLUSTER].name;
-		case THROWNKNIFE_NUM: return guns[THROWNKNIFE].name;
-		default: return ret;
+		case EAGLE_NUM: ret = guns[EAGLE].name; break;
+		case MP5_NUM: ret = guns[MP5].name; break;
+		case AK74_NUM: ret = guns[AK74].name; break;
+		case STEYRAUG_NUM: ret = guns[STEYRAUG].name; break;
+		case SPAS12_NUM: ret = guns[SPAS12].name; break;
+		case RUGER77_NUM: ret = guns[RUGER77].name; break;
+		case M79_NUM: ret = guns[M79].name; break;
+		case BARRETT_NUM: ret = guns[BARRETT].name; break;
+		case M249_NUM: ret = guns[M249].name; break;
+		case MINIGUN_NUM: ret = guns[MINIGUN].name; break;
+		case COLT_NUM: ret = guns[COLT].name; break;
+		case KNIFE_NUM: ret = guns[KNIFE].name; break;
+		case CHAINSAW_NUM: ret = guns[CHAINSAW].name; break;
+		case LAW_NUM: ret = guns[LAW].name; break;
+		case BOW2_NUM: ret = guns[BOW2].name; break;
+		case BOW_NUM: ret = guns[BOW].name; break;
+		case FLAMER_NUM: ret = guns[FLAMER].name; break;
+		case M2_NUM: ret = guns[M2].name; break;
+		case NOWEAPON_NUM: ret = guns[NOWEAPON].name; break;
+		case FRAGGRENADE_NUM: ret = guns[FRAGGRENADE].name; break;
+		case CLUSTERGRENADE_NUM: ret = guns[CLUSTERGRENADE].name; break;
+		case CLUSTER_NUM: ret = guns[CLUSTER].name; break;
+		case THROWNKNIFE_NUM: ret = guns[THROWNKNIFE].name;
 	}
-
 	return ret;
 }
 
 int weapon_num_internal_to_external(int num)
 {
+	int ret;
+
+	ret = num;
 	switch(num)
 	{
-		case KNIFE_NUM: return 14;
-		case CHAINSAW_NUM: return 15;
-		case LAW_NUM: return 16;
-		case FLAMER_NUM: return 11;
-		case BOW_NUM: return 12;
-		case BOW2_NUM: return 13;
-		default: return num;
+		case KNIFE_NUM: ret = 14; break;
+		case CHAINSAW_NUM: ret = 15; break;
+		case LAW_NUM: ret = 16; break;
+		case FLAMER_NUM: ret = 11; break;
+		case BOW_NUM: ret = 12; break;
+		case BOW2_NUM: ret = 13;
 	}
-
-	return num;
+	return ret;
 }
 
 int weapon_num_external_to_internal(int num)
 {
+	int ret;
+
+	ret = num;
 	switch(num)
 	{
-		case 14: return KNIFE_NUM;
-		case 15: return CHAINSAW_NUM;
-		case 16: return LAW_NUM;
-		case 11: return FLAMER_NUM;
-		case 12: return BOW_NUM;
-		case 13: return BOW2_NUM;
-		default: return num;
+		case 14: ret = KNIFE_NUM; break;
+		case 15: ret = CHAINSAW_NUM; break;
+		case 16: ret = LAW_NUM; break;
+		case 11: ret = FLAMER_NUM; break;
+		case 12: ret = BOW_NUM; break;
+		case 13: ret = BOW2_NUM;
 	}
-
-	return num;
+	return ret;
 }
 
 char *weapon_name_by_num(int num)
 {
 	int weaponindex;
-	char *ret = "";
+	char *ret;
 
+	ret = NULL;
 	for(weaponindex = 0; weaponindex < TOTAL_WEAPONS; weaponindex++)
-		if(num == guns[weaponindex].num) return ret = guns[weaponindex].name;
-
+		if(num == guns[weaponindex].num)
+		{
+			ret = guns[weaponindex].name;
+			break;
+		}
 	return ret;
 }
 
-int is_main_weapon_index(short weaponindex)
+int is_main_weapon_index(int weaponindex)
 {
 	return (weaponindex >= 1 && weaponindex <= MAIN_WEAPONS);
 }
 
-int is_secondary_weapon_index(short weaponindex)
+int is_secondary_weapon_index(int weaponindex)
 {
 	return (weaponindex >= PRIMARY_WEAPONS + 1 && weaponindex <= MAIN_WEAPONS);
 }
 
-int is_extended_weapon_index(short weaponindex)
+int is_extended_weapon_index(int weaponindex)
 {
 	return (weaponindex >= 1 && weaponindex <= EXTENDED_WEAPONS);
 }
 
 int calculate_bink(int accumulated, int bink)
 {
-	return accumulated + bink - round(accumulated * (accumulated / ((10 * bink) + accumulated)));
+	return accumulated + bink - (int) round(accumulated * (accumulated / ((10 * bink) + accumulated)));
+}
+
+char *alloc_weapon_name(char *name)
+{
+	return strcpy(malloc(strlen(name) + 1), name);
 }
