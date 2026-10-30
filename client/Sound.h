@@ -1,5 +1,9 @@
+#ifndef SOUND_H
+#define SOUND_H
+
 #include <AL/al.h>
 #include <AL/alc.h>
+#include "../shared/Vector.h"
 
 #define MAX_SOURCES 256
 #define RESERVED_SOURCES 128
@@ -7,22 +11,22 @@
 #define CHANNEL_WEATHER 127
 
 typedef struct {
-        ALuint loaded, buffer;
-        int ret;
+    ALuint loaded, buffer;
+    int ret;
 } TSoundSample;
 
 typedef struct {
-        char name[26];
-        TSoundSample samp;
+    char name[26];
+    TSoundSample samp;
 } TScriptSound;
 
-TSoundSample samp[MAX_SAMPLES];
-TScriptSound *scriptsamp;
-float volumeinternal;
-ALCdevice *aldevice;
-ALCcontext *alcontext;
-ALuint sources[MAX_SOURCES - 1];
-int defaultchannel = -1;
+extern TSoundSample samp[MAX_SAMPLES];
+extern TScriptSound *scriptsamp;
+extern float volumeinternal;
+extern ALCdevice *aldevice;
+extern ALCcontext *alcontext;
+extern ALuint sources[MAX_SOURCES - 1];
+extern int defaultchannel;
 
 int init_sound(void);
 short sound_name_to_id(char *);
@@ -35,3 +39,5 @@ void play_sound(int, TVector2, int);
 int stop_sound(int);
 int set_sound_paused(int, int);
 int set_volume(int, float);
+
+#endif /* SOUND_H */
