@@ -1,3 +1,6 @@
+#ifndef WEAPONS_H
+#define WEAPONS_H
+
 #define EAGLE 0
 #define MP5 1
 #define AK74 2
@@ -25,8 +28,8 @@
 #define PRIMARY_WEAPONS 10
 #define SECONDARY_WEAPONS 4
 #define BONUS_WEAPONS 3
-#define MAIN_WEAPONS PRIMARY_WEAPONS + SECONDARY_WEAPONS
-#define EXTENDED_WEAPONS MAIN_WEAPONS + BONUS_WEAPONS
+#define MAIN_WEAPONS (PRIMARY_WEAPONS + SECONDARY_WEAPONS)
+#define EXTENDED_WEAPONS (MAIN_WEAPONS + BONUS_WEAPONS)
 
 #define ORIGINAL_WEAPONS 20
 #define TOTAL_WEAPONS 23
@@ -71,11 +74,11 @@
 #define BULLET_STYLE_M2 14
 
 #define WEAPON_NOCOLLISION_ENEMY 1
-#define WEAPON_NOCOLLISION_TEAM 1 << 1
-#define WEAPON_NOCOLLISION_SELF 1 << 2
-#define WEAPON_NOCOLLISION_EXP_ENEMY 1 << 3
-#define WEAPON_NOCOLLISION_EXP_TEAM 1 << 4
-#define WEAPON_NOCOLLISION_EXP_SELF 1 << 5
+#define WEAPON_NOCOLLISION_TEAM (1 << 1)
+#define WEAPON_NOCOLLISION_SELF (1 << 2)
+#define WEAPON_NOCOLLISION_EXP_ENEMY (1 << 3)
+#define WEAPON_NOCOLLISION_EXP_TEAM (1 << 4)
+#define WEAPON_NOCOLLISION_EXP_SELF (1 << 5)
 
 typedef struct {
 	int ammo, ammocount, num, recoil,
@@ -84,32 +87,34 @@ typedef struct {
 	    reloadtimeprev, reloadtimecount, texturenum,
 	    cliptexturenum, clipreload, clipintime,
 	    clipouttime, nocollision, firemode, timeout,
-	    bulletstyle, firestyle, bulletimagestyle;
+	    bulletstyle, firestyle, bulletimagestyle, bink;
 	float speed, movementacc, fireintervalreal, reloadtimereal,
 	      hitmultiply, bulletspread, push, inheritedvelocity,
 	      modifierlegs, modifierchest, modifierhead;
-	short bink;
 	char *name, *ininame;
 
 } TGun;
 
-unsigned int defaultwmchecksum, loadedwmchecksum;
-TGun guns[TOTAL_WEAPONS], defaultguns[TOTAL_WEAPONS];
+extern unsigned int defaultwmchecksum, loadedwmchecksum;
+extern TGun guns[TOTAL_WEAPONS], defaultguns[TOTAL_WEAPONS];
 
-void create_weapons(int);
-void create_default_weapons(int);
-void create_weapons_base(void);
-void create_normal_weapons(void);
-void create_realistic_weapons(void);
-void build_weapons(void);
-unsigned int create_wm_checksum(void);
-short weapon_num_to_index(int num);
-int weapon_name_to_num(char *);
-char *weapon_num_to_name(int);
-char *weapon_name_by_num(int);
-int is_main_weapon_index(short);
-int is_secondary_weapon_index(short);
-int is_extended_weapon_index(short);
-int calculate_bink(int, int);
-int weapon_num_internal_to_external(int);
-int weapon_num_external_to_internal(int);
+extern void create_weapons(int);
+extern void create_default_weapons(int);
+extern void create_weapons_base(void);
+extern void create_normal_weapons(void);
+extern void create_realistic_weapons(void);
+extern void build_weapons(void);
+extern unsigned int create_wm_checksum(void);
+extern short weapon_num_to_index(int);
+extern int weapon_name_to_num(char *);
+extern char *weapon_num_to_name(int);
+extern char *weapon_name_by_num(int);
+extern int is_main_weapon_index(int);
+extern int is_secondary_weapon_index(int);
+extern int is_extended_weapon_index(int);
+extern int calculate_bink(int, int);
+extern int weapon_num_internal_to_external(int);
+extern int weapon_num_external_to_internal(int);
+extern char *alloc_weapon_name(char *);
+
+#endif /* WEAPONS_H */
